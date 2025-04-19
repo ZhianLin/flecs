@@ -1112,3 +1112,19 @@ jobs:
       - name: run tests
         run: |
           ctest -C Debug --verbose
+          
+  create-release:
+      needs: [build-linux, build-windows]
+      runs-on: ubuntu-latest
+      if: startsWith(github.ref, 'refs/tags/v')
+      steps:
+        - uses: actions/checkout@v4
+        - name: Collect binaries
+          run: |
+            mkdir -p release_artifacts
+            cp ./output/linux/*.so release_artifacts/
+            cp ./output/win/*.{dll,lib} release_artifacts/
+        - uses: softprops/action-gh-release@v1
+          with:
+            name: ${{ github.ref_name }}
+            files: release_artifacts/*
