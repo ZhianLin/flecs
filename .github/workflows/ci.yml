@@ -36,6 +36,15 @@ jobs:
         run: |
           bake --strict
 
+      - name: Archive build artifacts
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: actions/upload-artifact@v3
+        with:
+          name: linux-artifacts
+          path: |
+            ./bake/linux-*
+            ./libflecs.so
+
   build-macos:
     runs-on: macos-latest
     timeout-minutes: 30
@@ -83,6 +92,16 @@ jobs:
 
       - name: build examples (release)
         run: bake/bake examples --strict --cfg debug
+
+      - name: Archive build artifacts
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: actions/upload-artifact@v3
+        with:
+          name: windows-artifacts
+          path: |
+            ./bake/windows-*
+            ./flecs.dll
+            ./flecs.lib
 
   build-msys:
     runs-on: windows-latest
